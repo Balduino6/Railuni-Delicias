@@ -1,0 +1,93 @@
+/* Topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #444;
+  color: #fff;
+  padding: 1rem 2rem;
+}
+.topbar .logo { font-size: 1.5rem; }
+.topbar .user-info a { color: #fff; margin-left: 1rem; }
+
+/* Main container for sidebar + content */
+.main-container {
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background: #2c3e50;
+  min-height: calc(100vh - 60px);
+  padding: 1rem;
+}
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+.sidebar li a {
+  color: #ecf0f1;
+  display: block;
+  padding: 0.5rem 0;
+  text-decoration: none;
+}
+.sidebar li a:hover {
+  background: #34495e;
+}
+
+/* Content */
+.content {
+  flex: 1;
+  padding: 2rem;
+}
+
+/* Dashboard cards */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap: 1rem;
+}
+.card {
+  background: #f8f8f8;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.card h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: #333;
+}
+.card p {
+  font-size: 1.8rem;
+  color: #007BFF;
+  margin: 0;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 1rem;
+  background: #ddd;
+  margin-top: auto;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}

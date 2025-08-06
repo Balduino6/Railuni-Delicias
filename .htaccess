@@ -1,0 +1,27 @@
+# # Ativa o Rewrite Engine
+# RewriteEngine On
+
+# # Redireciona todas as requisições para index.php se não for arquivo ou pasta existente
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteRule ^(.+)$ index.php [L,QSA]
+
+# # Protege arquivos de configuração
+# <FilesMatch "\.(env|htaccess|ini|phar)$">
+#     Require all denied
+# </FilesMatch>
+
+# # Define página de erro personalizada
+# ErrorDocument 404 /404.php
+
+# # Bloqueia execução de scripts em uploads (exemplo de segurança adicional)
+# <Directory "/path/to/tascapandora/uploads">
+#     <FilesMatch "\.(php|php5|phtml|phar)$">
+#         Require all denied
+#     </FilesMatch>
+# </Directory>
+
+# # Habilita compressão gzip
+# <IfModule mod_deflate.c>
+#     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+# </IfModule>
