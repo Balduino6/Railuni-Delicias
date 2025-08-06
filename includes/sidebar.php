@@ -57,9 +57,9 @@ $perfil = $user['perfil'];
             <ul class="nav flex-column">
               <?php foreach ($link as $sublabel => $sublink): ?>
                 <?php $active = (strpos($_SERVER['REQUEST_URI'], basename($sublink)) !== false); ?>
-                <li class="nav-item mb-1">
+                <li class="nav-item mb-0">
                   <a href="<?= $sublink ?>"
-                     class="nav-link d-flex align-items-center <?= $active ? 'active bg-light text-primary border-start border-3 border-primary' : 'text-dark' ?> small">
+                     class="nav-link d-flex align-items-center <?= $active ? 'active bg-light text-primary fw-bold' : 'text-dark' ?> small">
                     <i class="fas fa-chevron-right me-2"></i>
                     <span><?= htmlspecialchars($sublabel) ?></span>
                   </a>

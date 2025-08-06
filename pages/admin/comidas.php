@@ -27,11 +27,23 @@ $comidas = $conn->query(
 include __DIR__ . '/../../includes/header.php';
 ?>
 
+<style>
+  body {
+    background-color: #f0f2f5;
+  }
+  #comidas {
+    border-bottom: 1px solid #ddd;
+  }
+
+
+</style>
+
 <div class="d-flex">
 
   <main class="flex-grow-1 p-5">
+    <h1 id="comidas" class="mb-4 display-4 fw-bold text-secondary">Gerenciamento de Comidas</h1>
+    <p class="text-muted mb-4">Gerencie as comidas disponíveis no sistema.</p>
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="h3 mb-0">Comidas</h1>
       <a href="comida_form.php" class="btn btn-primary">
         <i class="fa-solid fa-plus me-1"></i> Nova Comida
       </a>

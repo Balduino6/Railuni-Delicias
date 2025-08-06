@@ -1,5 +1,4 @@
 <?php
-// login.php
 require_once __DIR__ . '/config/auth.php';
 $auth = new Auth();
 $error = '';
@@ -25,41 +24,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Entrar - Taska da Pandora</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Railuni Delícias</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: url('assets/img/snackbar-bg-blur.jpg') center/cover no-repeat;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
     }
-    .login-wrapper {
-      background: rgba(34, 34, 34, 0.6);
-      backdrop-filter: blur(12px);
-      border-radius: 16px;
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, #E56EA1, #EFE1D6);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .login-container {
+      background: rgba(255,255,255,0.85);
       padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.15);
       width: 360px;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
       position: relative;
+      text-align: center;
     }
     .logo {
-      display: block;
-      margin: 0 auto 1.5rem;
+      background: url('assets/img/railuni.jpg') center/contain no-repeat;
       width: 80px;
       height: 80px;
-      background: url('assets/img/logo.png') center/contain no-repeat;
+      margin: 0 auto 1rem;
     }
     h2 {
-      text-align: center;
-      color: #ffd700;
+      color: #6B4226;
+      font-weight: 600;
       margin-bottom: 1rem;
-      font-weight: 500;
     }
     .input-group {
       position: relative;
@@ -68,76 +67,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .input-group input {
       width: 100%;
       padding: 1rem 1rem 0.5rem;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.3);
+      border: 1px solid rgba(107,66,38,0.2);
       border-radius: 8px;
-      color: #ffffff;
+      background: #fff;
+      color: #6B4226;
       font-size: 1rem;
-      caret-color: #ffd700;
     }
     .input-group label {
       position: absolute;
       top: 1rem;
       left: 1rem;
-      color: rgba(255,215,0,0.7);
-      transition: 0.2s;
+      color: #6B4226a1;
       pointer-events: none;
+      transition: 0.2s ease;
     }
     .input-group input:focus + label,
     .input-group input:not(:placeholder-shown) + label {
-      top: 0.3rem;
+      top: 0.4rem;
       font-size: 0.75rem;
-      color: #ffd700;
+      color: #6B4226;
     }
     .input-group input:focus {
       outline: none;
-      background: rgba(255,255,255,0.2);
-      border-color: #ffd700;
+      border-color: #E56EA1;
+      background-color: #fff8f9;
     }
     .btn-login {
-      width: 100%;
-      padding: 0.75rem;
-      background: #ffd700;
+      background: #E56EA1;
+      color: white;
       border: none;
+      padding: 0.75rem;
+      width: 100%;
       border-radius: 8px;
-      color: #222222;
       font-size: 1rem;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
+      transition: all 0.3s ease;
     }
     .btn-login:hover {
-      background: #e6c200;
+      background: #cc5a90;
       transform: translateY(-2px);
     }
     .error-box {
-      background: rgba(255,0,0,0.2);
-      color: #ffdddd;
+      background: rgba(255, 0, 0, 0.1);
+      color: #b30000;
       padding: 0.75rem;
       border-radius: 6px;
       margin-bottom: 1rem;
-      font-size: 0.875rem;
-      text-align: center;
+      font-size: 0.9rem;
     }
     .extras {
-      text-align: center;
       margin-top: 1rem;
     }
     .extras a {
-      color: #ffd700;
       text-decoration: none;
-      font-size: 0.875rem;
+      font-size: 0.85rem;
+      color: #6B4226;
       transition: color 0.2s;
     }
     .extras a:hover {
-      color: #ffffff;
+      color: #E56EA1;
     }
   </style>
 </head>
 <body>
-  <div class="login-wrapper">
+  <div class="login-container">
     <div class="logo"></div>
-    <h2>Entrar na Taska</h2>
+    <h2>Railuni Delícias</h2>
     <?php if ($error): ?>
       <div class="error-box"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
@@ -153,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button type="submit" class="btn-login">Entrar</button>
     </form>
     <div class="extras">
-      <a href="recuperar_senha.php">Esqueci minha senha</a>
+      <a href="recuperar_senha.php">Esqueceu a senha?</a>
     </div>
   </div>
 </body>

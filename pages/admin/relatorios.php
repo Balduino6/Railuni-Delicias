@@ -99,6 +99,7 @@ $estoqueCritico = $ec->fetchAll(PDO::FETCH_ASSOC);
     <h1 class="mb-4 display-4 fw-bold text-secondary">
       <i class="bi bi-bar-chart-line-fill me-2"></i>Relatórios
     </h1>
+    <p class="text-muted mb-4">Visualize estatísticas e relatórios do sistema.</p>
 
     <form class="row g-3 mb-5" method="get">
       <div class="col-auto">
@@ -109,6 +110,7 @@ $estoqueCritico = $ec->fetchAll(PDO::FETCH_ASSOC);
         <label class="form-label">Até</label>
         <input type="date" name="ate" value="<?= htmlspecialchars($dataAte) ?>" class="form-control">
       </div>
+
       <div class="col-auto align-self-end">
         <button type="submit" class="btn btn-primary">Filtrar</button>
       </div>

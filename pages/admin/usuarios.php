@@ -13,11 +13,21 @@ $usuarios = $conn->query("SELECT id, nome, email, perfil FROM usuarios ORDER BY 
 ?>
 <?php include __DIR__ . '/../../includes/header.php'; ?>
 
+<style>
+  body {
+    background-color: #f0f2f5;
+  }
+  #usuarios {
+    border-bottom: 1px solid #ddd;
+  }
+
+</style>
+
+  <h2 id="usuarios" class="mb-4 display-4 fw-bold text-secondary"><i class="bi bi-people-fill me-2"></i>Usuários</h2>
 <div class="container-fluid my-5">
   <div class="d-flex justify-content-between align-items-center mb-4 px-3">
-    <h2 class="fw-semibold text-primary"><i class="bi bi-people-fill me-2"></i>Usuários</h2>
-    <a href="usuario_form.php" class="btn btn-success btn-lg shadow-sm">
-      <i class="bi bi-person-plus-fill me-1"></i> Novo Usuário
+    <a href="usuario_form.php" class="btn btn-primary">
+      <i class="fa fa-plus me-1"></i> Novo Usuário
     </a>
   </div>
 
@@ -48,12 +58,13 @@ $usuarios = $conn->query("SELECT id, nome, email, perfil FROM usuarios ORDER BY 
                   <?php endif; ?>
                 </td>
                 <td class="text-center">
-                  <a href="usuario_form.php?id=<?= $u['id'] ?>" class="btn btn-sm btn-outline-primary me-1" title="Editar">
-                    <i class="bi bi-pencil"></i>
+                  <a href="usuario_form.php?id=<?= $u['id'] ?>" class="btn btn-sm btn-outline-secondary me-1" 
+                  title="Editar">
+                    <i class="fa-solid fa-pen-to-square"></i>
                   </a>
                   <a href="usuarios.php?delete_id=<?= $u['id'] ?>" class="btn btn-sm btn-outline-danger" title="Excluir"
                      onclick="return confirm('Excluir este usuário?');">
-                    <i class="bi bi-trash"></i>
+                    <i class="fa-solid fa-trash"></i>
                   </a>
                 </td>
               </tr>
@@ -70,8 +81,5 @@ $usuarios = $conn->query("SELECT id, nome, email, perfil FROM usuarios ORDER BY 
     </div>
   </div>
 </div>
-
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
-
 
 <?php include __DIR__ . '/../../includes/footer.php'; ?>
