@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $perfil = $_SESSION['user_profile'];
         header('Location: ' . ($perfil === 'admin'
             ? 'pages/admin/dashboard.php'
-            : 'pages/funcionario/vendas.php'
+            : 'pages/atendente/vendas.php'
         ));
         exit;
     }

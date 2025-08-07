@@ -57,14 +57,14 @@ $topProdutos = $conn->query(
     justify-content: center;
     border-radius: 50%;
   }
-    h1{
+    #dashboard{
     border-bottom: 1px solid #ddd;
   }
 </style>
 <div class="d-flex">
   <?php include_once __DIR__ . '/../../includes/sidebar.php'; ?>
   <main class="flex-grow-1 p-5">
-    <h1 class="mb-4 display-4 fw-bold text-secondary">Painel de Controle</h1>
+    <h1 id="dashboard" class="mb-4 display-4 fw-bold text-secondary">Painel de Controle</h1>
     <p class="text-muted mb-4">Visão geral do sistema e estatísticas.</p>
 
     <!-- Cards estatísticos -->

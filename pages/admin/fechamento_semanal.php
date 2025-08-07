@@ -1,5 +1,5 @@
 <?php
-// pages/admin/fechamento_diario.php
+// pages/admin/fechamento_semanal.php
 require_once __DIR__ . '/../../config/auth.php';
 require_once __DIR__ . '/../../config/db.php';
 
@@ -8,40 +8,49 @@ $auth->authorize(['admin']);
 $user = $auth->user();
 $conn = (new Database())->connect();
 
-// Data alvo
-$data = $_GET['data'] ?? date('Y-m-d');
+// Semana alvo (YYYY-WW)
+$input = $_GET['semana'] ?? date('o-\WW');
+$parts = explode('-', $input);
+$year = $parts[0];
+$week = (int)trim($parts[1], 'W');
 
-// 1) Total Vendas
+// Calcula data inicial e final da semana (ISO)
+$dto = new DateTime();
+$dto->setISODate($year, $week);
+$start = $dto->format('Y-m-d');
+$dto->modify('+6 days');
+$end = $dto->format('Y-m-d');
+
+// 1) Total Vendas na semana
 $stmtV = $conn->prepare("
-    SELECT 
-      SUM(iv.quantidade * iv.preco_unitario) AS total_vendas
+    SELECT SUM(iv.quantidade * iv.preco_unitario) AS total_vendas
     FROM vendas v
     JOIN itens_venda iv ON iv.id_venda = v.id
-    WHERE DATE(v.data_hora) = :data
+    WHERE DATE(v.data_hora) BETWEEN :start AND :end
 ");
-$stmtV->execute([':data' => $data]);
+$stmtV->execute([':start'=>$start,':end'=>$end]);
 $totalVendas = $stmtV->fetchColumn() ?: 0;
 
-// 2) Despesas Adicionais
+// 2) Despesas na semana
 $custoDespesas = 0;
 $tableExists = $conn->query("
     SELECT COUNT(*) FROM information_schema.TABLES
-    WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'custos_diarios'
+    WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='custos_diarios'
 ")->fetchColumn();
 if ($tableExists) {
     $stmtC = $conn->prepare("
         SELECT SUM(valor) AS despesas
         FROM custos_diarios
-        WHERE data = :data
+        WHERE data BETWEEN :start AND :end
     ");
-    $stmtC->execute([':data' => $data]);
+    $stmtC->execute([':start'=>$start,':end'=>$end]);
     $custoDespesas = $stmtC->fetchColumn() ?: 0;
 }
 
 // 3) Lucro
 $lucro = $totalVendas - $custoDespesas;
 
-// 4) Itens vendidos
+// 4) Itens vendidos na semana
 $stmtItens = $conn->prepare("
     SELECT p.nome AS produto,
            SUM(iv.quantidade) AS quantidade,
@@ -49,25 +58,23 @@ $stmtItens = $conn->prepare("
     FROM vendas v
     JOIN itens_venda iv ON iv.id_venda = v.id
     JOIN produtos p ON p.id = iv.id_produto
-    WHERE DATE(v.data_hora) = :data
+    WHERE DATE(v.data_hora) BETWEEN :start AND :end
     GROUP BY p.nome
     ORDER BY p.nome
 ");
-$stmtItens->execute([':data' => $data]);
+$stmtItens->execute([':start'=>$start,':end'=>$end]);
 $itensVendidos = $stmtItens->fetchAll(PDO::FETCH_ASSOC);
 
-// 5) Grava fechamento diário
+// Grava fechamento semanal (chave única: id_usuario + ano_semana)
 $stmtF = $conn->prepare("
     INSERT INTO fechamentos (id_usuario, data_hora, total)
     VALUES (:id_usuario, :data_hora, :total)
-    ON DUPLICATE KEY UPDATE
-      total = VALUES(total),
-      data_hora = VALUES(data_hora)
+    ON DUPLICATE KEY UPDATE total=VALUES(total), data_hora=VALUES(data_hora)
 ");
 $stmtF->execute([
-    ':id_usuario' => $user['id'],
-    ':data_hora'  => $data . ' 23:59:59',
-    ':total'      => $lucro
+    ':id_usuario'=>$user['id'],
+    ':data_hora'=>"$start 00:00:00",
+    ':total'=>$lucro
 ]);
 
 include __DIR__ . '/../../includes/header.php';
@@ -75,15 +82,16 @@ include __DIR__ . '/../../includes/header.php';
 
 <div class="container" id="print-area">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Fechamento Diário (<?= htmlspecialchars($data) ?>)</h2>
+    <h2>Fechamento Semanal (Semana <?= $year ?>-<?= str_pad($week,2,'0',STR_PAD_LEFT) ?>)</h2>
     <button onclick="window.print()" class="btn btn-secondary">Imprimir</button>
   </div>
+  <p><strong>Período:</strong> <?= $start ?> até <?= $end ?></p>
   <p><strong>Atendente:</strong> <?= htmlspecialchars($user['nome']) ?></p>
 
   <form class="row g-3 mb-4">
     <div class="col-auto">
-      <label for="data" class="form-label">Data</label>
-      <input type="date" id="data" name="data" class="form-control" value="<?= htmlspecialchars($data) ?>">
+      <label for="semana" class="form-label">Semana (YYYY-WW)</label>
+      <input type="week" id="semana" name="semana" class="form-control" value="<?= $year.'-'.str_pad($week,2,'0',STR_PAD_LEFT) ?>">
     </div>
     <div class="col-auto align-self-end">
       <button class="btn btn-primary">Filtrar</button>
@@ -94,20 +102,20 @@ include __DIR__ . '/../../includes/header.php';
     <div class="col-md-4">
       <div class="card text-center">
         <div class="card-header">Total Vendas</div>
-        <div class="card-body fs-4">Kz <?= number_format($totalVendas, 2, ',', '.') ?></div>
+        <div class="card-body fs-4">Kz <?= number_format($totalVendas,2,',','.') ?></div>
       </div>
     </div>
     <div class="col-md-4">
       <div class="card text-center">
         <div class="card-header">Total Despesas</div>
-        <div class="card-body fs-4">Kz <?= number_format($custoDespesas, 2, ',', '.') ?></div>
+        <div class="card-body fs-4">Kz <?= number_format($custoDespesas,2,',','.') ?></div>
       </div>
     </div>
     <div class="col-md-4">
       <div class="card text-center">
         <div class="card-header">Lucro Líquido</div>
-        <div class="card-body fs-4 <?= $lucro >= 0 ? 'text-success' : 'text-danger' ?>">
-          Kz <?= number_format($lucro, 2, ',', '.') ?>
+        <div class="card-body fs-4 <?= $lucro>=0?'text-success':'text-danger' ?>">
+          Kz <?= number_format($lucro,2,',','.') ?>
         </div>
       </div>
     </div>
@@ -116,41 +124,31 @@ include __DIR__ . '/../../includes/header.php';
   <h4>Itens Vendidos</h4>
   <table class="table table-striped">
     <thead>
-      <tr>
-        <th>Produto</th>
-        <th class="text-end">Quantidade</th>
-        <th class="text-end">Subtotal</th>
-      </tr>
+      <tr><th>Produto</th><th class="text-end">Qtd</th><th class="text-end">Subtotal</th></tr>
     </thead>
     <tbody>
-      <?php if (empty($itensVendidos)): ?>
+      <?php if(empty($itensVendidos)): ?>
         <tr><td colspan="3" class="text-center">Nenhum item vendido.</td></tr>
-      <?php else: ?>
-        <?php foreach ($itensVendidos as $item): ?>
-          <tr>
-            <td><?= htmlspecialchars($item['produto']) ?></td>
-            <td class="text-end"><?= (int)$item['quantidade'] ?></td>
-            <td class="text-end">Kz <?= number_format($item['subtotal'], 2, ',', '.') ?></td>
-          </tr>
-        <?php endforeach; ?>
-      <?php endif; ?>
+      <?php else: foreach($itensVendidos as $item): ?>
+        <tr>
+          <td><?= htmlspecialchars($item['produto']) ?></td>
+          <td class="text-end"><?= (int)$item['quantidade'] ?></td>
+          <td class="text-end">Kz <?= number_format($item['subtotal'],2,',','.') ?></td>
+        </tr>
+      <?php endforeach; endif; ?>
     </tbody>
   </table>
 </div>
 
 <?php include __DIR__ . '/../../includes/footer.php'; ?>
 
-<!-- No footer.php, antes de </body>: -->
+<!-- No footer.php antes de </body> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <style>
 @media print {
-  /* Esconde todo o resto */
   body * { visibility: hidden; }
-  /* Mostra apenas a área de impressão */
   #print-area, #print-area * { visibility: visible; }
-  /* Posiciona o conteúdo impresso no topo */
-  #print-area { position: absolute; top: 0; left: 0; width: 100%; }
-  /* Remove o botão imprimir */
+  #print-area { position: absolute; top:0; left:0; width:100%; }
   #print-area button { display: none; }
 }
 </style>
